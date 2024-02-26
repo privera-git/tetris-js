@@ -2,10 +2,8 @@
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color-scheme: dark light;
     color: rgba(255, 255, 255, 0.87);
-    /*background-color: #242424;*/
-    background-color: #2424cc;
+    background-color: #666;
     font-synthesis: none;
-    
 }
 
 body {  
@@ -14,4 +12,12 @@ body {
     display: grid;
     place-content: center;
     height: 100vh;
+}
+
+header {
+    text-align: center;
+}
+
+p {
+    text-align: right;    
 }

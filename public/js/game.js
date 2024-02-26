@@ -3,7 +3,9 @@ const BOARD_WIDTH = 10;
 const BOARD_HEIGHT = 20;
 
 const BACKGROUND_COLOR = '#000';
-const DRAW_COLOR = "yellow";
+const DRAW_COLOR = "#ccc";
+
+const PIECE_FALL_TIME = 1000;
 
 let board = new Board(BOARD_WIDTH, BOARD_HEIGHT, BACKGROUND_COLOR, DRAW_COLOR);
 
@@ -11,11 +13,15 @@ let initialPosition = { x: BOARD_WIDTH / 2 - 2, y: 0};
 let piece = createRandomPiece(board, initialPosition.x, initialPosition.y);
 
 let context = initContext(BLOCK_SIZE, BOARD_WIDTH, BOARD_HEIGHT);
+let score = initScore();
 
 const FPS = 30;
 const MS_PER_FRAME = 1000 / FPS;
 let frames = 0;
 let msPrev = window.performance.now();
+
+let msMoveDown = 0;
+let lastMoveDown = 0;
 
 update();
 
@@ -48,10 +54,24 @@ function initContext(blockSize, boardWidth, boardHeight) {
     return context;
 }
 
-function update() {
-    draw();
-    window.requestAnimationFrame(update);
+function initScore() {
+    let $score = document.getElementById('score');
+    return new Score($score);
+}
 
+function movePieceDown(time) {
+    const deltaMoveDown = time - lastMoveDown;
+    lastMoveDown = time;
+
+    msMoveDown += deltaMoveDown;
+
+    if (msMoveDown >= PIECE_FALL_TIME) {
+        moveDown();
+        msMoveDown = 0;
+    }
+}
+
+function fixFps() {
     const msNow = window.performance.now();
     const msPassed = msNow - msPrev;
 
@@ -65,7 +85,17 @@ function update() {
     frames++;
 }
 
+function update(time = 0) {
+    movePieceDown(time);
+
+    draw();
+    window.requestAnimationFrame(update);
+
+    fixFps();
+}
+
 function draw() {
     board.draw(context);
     piece.draw(context);
+    score.draw();
 }

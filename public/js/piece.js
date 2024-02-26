@@ -48,7 +48,30 @@ class Piece {
     }
 
     rotate() {
-        return true;
+        const actual = this.shape;
+        const rotated = [];
+        
+        console.log('actual shape: ');
+        console.log(actual);
+        for (let y = 0; y < actual[0].length; y++) {
+            const row = [];
+
+            for (let x = actual.length-1; x >= 0; x--) {
+                let value = actual[x][y];
+                console.log('actual[' + x + '][' + y + ']: ');
+                console.log(value); 
+                row.push(value);
+            }
+
+            console.log('row: ');
+            console.log(row);
+            rotated.push(row);
+        }
+
+        this.shape = rotated;
+        if (this.checkCollisions()) {
+            this.shape = actual;
+        }
     }
 }
 
@@ -76,11 +99,48 @@ function createLPiece(board, x, y) {
     return new Piece(board, x, y, shape, 'purple')
 }
 
+function createInvertedLPiece(board, x, y) {
+    let shape = [
+        [0, 1],
+        [0, 1],
+        [1, 1]
+    ];
+    return new Piece(board, x, y, shape, 'yellow')
+}
+
+function createTPiece(board, x, y) {
+    let shape = [
+        [0, 1, 0],
+        [1, 1, 1]
+    ];
+    return new Piece(board, x, y, shape, 'green')
+}
+
+function createZPiece(board, x, y) {
+    let shape = [
+        [1, 1, 0],
+        [0, 1, 1]
+    ];
+    return new Piece(board, x, y, shape, 'magenta')
+}
+
+function createInvertedZPiece(board, x, y) {
+    let shape = [
+        [0, 1, 1],
+        [1, 1, 0]
+    ];
+    return new Piece(board, x, y, shape, 'orange')
+}
+
 function createRandomPiece(board, x, y) {
-    let shape = Math.floor(Math.random()*3);
+    let shape = Math.floor(Math.random()*7);
     switch (shape) {
         case 0: return createSquarePiece(board, x, y);
         case 1: return createLPiece(board, x, y);
+        case 2: return createInvertedLPiece(board, x, y);
+        case 3: return createTPiece(board, x, y);
+        case 4: return createZPiece(board, x, y);
+        case 5: return createInvertedZPiece(board, x, y);
         default: return createBarPiece(board, x, y);
     }
 }

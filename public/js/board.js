@@ -16,10 +16,7 @@ class Board {
 
                 let posX = piece.position.x + xOffset;
                 let posY = piece.position.y + yOffset;
-                console.log('x,y: ' + posX + ',' + posY);
-                console.log(this.boardMap);
                 this.boardMap[posY][posX] = 1;
-                console.log(this.boardMap);
             });
         });
     }
@@ -51,20 +48,20 @@ class Board {
                 let posY = piece.position.y + yOffset;
                 if (posY < 0 || posY >= this.height) {
                     // vertical out of bounds
-                    console.log('Collision: vertical out of bounds')
+                    console.debug('Collision: vertical out of bounds')
                     return true;
                 }
 
                 let posX = piece.position.x + xOffset;
                 if (posX < 0 || posX >= this.width) {
                     // horizontal out of bounds
-                    console.log('Collision: horizontal out of bounds')
+                    console.debug('Collision: horizontal out of bounds')
                     return true;
                 }
                 
                 if (this.boardMap[posY][posX]) {
                     // already a solid block in board
-                    console.log('Collision: already a solid block in board')
+                    console.debug('Collision: already a solid block in board')
                     return true;
                 }
 
@@ -72,36 +69,38 @@ class Board {
             });
         });
     }
+
+    removeRows() {
+
+        let rowsToRemove = [];
+
+        this.boardMap.forEach((row, y) => {
+            if (this.isRowComplete(row)) {
+               rowsToRemove.push(y); 
+            }
+        });
+
+        rowsToRemove.forEach((y) => {
+            this.removeRow(y);
+        });
+        
+        return rowsToRemove.length;
+    }
+
+    isRowComplete(row) {
+        return row.every(value => value);
+    }
+
+    removeRow(y) {
+        this.boardMap.splice(y, 1);
+        this.boardMap.unshift(Array(this.width).fill(0));
+    }
     
     createBoardMap() {
         let map = Array.from({length: this.height}, () => (
             Array(this.width).fill(0))
         );
         console.info(map);
-    
-        map = this.mockData(map);
-        console.info(map);
-    
-        return map;
-    }
-    
-    mockData(map) {
-        let firstRow = map[0];
-        console.info('first row: '+ firstRow);
-    
-        let lastRow = map[this.height - 1];
-        console.info('last row: '+ lastRow);
-    
-        let lastBlock = lastRow[this.width - 1];
-        console.info('last block: '+ lastBlock);
-        
-        console.info('setting last block')
-        lastRow[this.width - 1] = 1;
-        lastRow[this.width - 2] = 1;
-        lastRow[this.width - 5] = 1;
-    
-        console.info('first row: '+ firstRow);
-        console.info('last row: '+ lastRow);
     
         return map;
     }

@@ -16,6 +16,8 @@ function moveRight() {
 function moveDown() {
     if (!piece.moveDown()) {
         board.add(piece);
+        let rowsCompleted = board.removeRows();
+        score.addRows(rowsCompleted);
         piece = createRandomPiece(board, initialPosition.x, initialPosition.y);
     }
 }
