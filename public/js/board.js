@@ -16,7 +16,7 @@ class Board {
 
                 let posX = piece.position.x + xOffset;
                 let posY = piece.position.y + yOffset;
-                this.boardMap[posY][posX] = 1;
+                this.boardMap[posY][posX] = piece.color;
             });
         });
     }
@@ -28,7 +28,7 @@ class Board {
         this.boardMap.forEach((row, y) => {
             row.forEach((value, x) => {
                 if (value != 0) {
-                    context.fillStyle = this.drawColor;
+                    context.fillStyle = value;
                     context.fillRect(x, y, 1, 1);
                 }
             });
