@@ -6,22 +6,42 @@ document.addEventListener('keydown', event => {
 });
 
 function moveLeft() {
-    piece.moveLeft();
+    if (!game.running) {
+        return;
+    }
+
+    game.piece.moveLeft();
 }
 
 function moveRight() {
-    piece.moveRight();
+    if (!game.running) {
+        return;
+    }
+
+    game.piece.moveRight();
 }
 
 function moveDown() {
-    if (!piece.moveDown()) {
-        board.add(piece);
-        let rowsCompleted = board.removeRows();
-        score.addRows(rowsCompleted);
-        piece = createRandomPiece(board, initialPosition.x, initialPosition.y);
+    if (!game.running) {
+        return;
+    }
+
+    if (!game.piece.moveDown()) {
+        game.board.add(game.piece);
+        let rowsCompleted = game.board.removeRows();
+        game.score.addRows(rowsCompleted);
+        game.piece = createRandomPiece(game.board, game.initialPosition.x, game.initialPosition.y);
+        if (game.piece.checkCollisions()) {
+            console.info('Game over!');
+            game.stop();
+        }
     }
 }
 
 function rotate() {
-    piece.rotate();
+    if (!game.running) {
+        return;
+    }
+
+    game.piece.rotate();
 }
