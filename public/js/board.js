@@ -1,78 +1,108 @@
-const BOARD_WIDTH = 10;
-const BOARD_HEIGHT = 20;
-
-const BACKGROUND_COLOR = '#000';
-const DRAW_COLOR = "yellow";
-
-function initBoard() {
-    console.info('Initializing board');
-
-    console.info('Looking for canvas object');
-    let $canvas = document.querySelector('canvas');
-    if (!$canvas) {
-        console.error("Canvas not found");
-        return null;
+class Board {
+    constructor(width, height, backgroundColor, drawColor) {
+        this.width = width;
+        this.height = height;
+        this.backgroundColor = backgroundColor;
+        this.drawColor = drawColor;
+        this.boardMap = this.createBoardMap();
     }
 
-    console.info('Setting board size in pixels')
-    let width = BLOCK_SIZE * BOARD_WIDTH;
-    let height = BLOCK_SIZE * BOARD_HEIGHT;
-    console.info(width + 'x' + height);
+    add(piece) {
+        piece.shape.forEach((row, yOffset) => {
+            row.forEach((value, xOffset) => {
+                if (!value) {
+                    return;
+                }
 
-    $canvas.width = width;
-    $canvas.height = height;    
-
-    let context = $canvas.getContext('2d');
-    console.info('Scaling board: ' + BLOCK_SIZE + 'px');
-    context.scale(BLOCK_SIZE, BLOCK_SIZE);
-
-    return context;
-}
-
-function draw() {
-    board.fillStyle = BACKGROUND_COLOR;
-    board.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
-
-    boardMap.forEach((row, y) => {
-        row.forEach((value, x) => {
-            if (value != 0) {
-                board.fillStyle = DRAW_COLOR;
-                board.fillRect(x, y, 1, 1);
-            }
+                let posX = piece.position.x + xOffset;
+                let posY = piece.position.y + yOffset;
+                console.log('x,y: ' + posX + ',' + posY);
+                console.log(this.boardMap);
+                this.boardMap[posY][posX] = 1;
+                console.log(this.boardMap);
+            });
         });
-    });
+    }
+
+    draw(context) {
+        context.fillStyle = this.backgroundColor;
+        context.fillRect(0, 0, this.width, this.height);
     
-}
+        this.boardMap.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value != 0) {
+                    context.fillStyle = this.drawColor;
+                    context.fillRect(x, y, 1, 1);
+                }
+            });
+        });
+        
+    }
 
-function createBoardMap() {
-    let map = Array.from({length: BOARD_HEIGHT}, () => (
-        Array(BOARD_WIDTH).fill(0))
-    );
-    console.info(map);
+    checkCollisions(piece) {
+        return piece.shape.find((row, yOffset) => {
+            return row.find((value, xOffset) => {
+                
+                if (!value) {
+                    // transaparent piece block
+                    return false;
+                }
 
-    map = mockData(map);
-    console.info(map);
+                let posY = piece.position.y + yOffset;
+                if (posY < 0 || posY >= this.height) {
+                    // vertical out of bounds
+                    console.log('Collision: vertical out of bounds')
+                    return true;
+                }
 
-    return map;
-}
+                let posX = piece.position.x + xOffset;
+                if (posX < 0 || posX >= this.width) {
+                    // horizontal out of bounds
+                    console.log('Collision: horizontal out of bounds')
+                    return true;
+                }
+                
+                if (this.boardMap[posY][posX]) {
+                    // already a solid block in board
+                    console.log('Collision: already a solid block in board')
+                    return true;
+                }
 
-function mockData(map) {
-    let firstRow = map[0];
-    console.info('first row: '+ firstRow);
-
-    let lastRow = map[BOARD_HEIGHT - 1];
-    console.info('last row: '+ lastRow);
-
-    let lastBlock = lastRow[BOARD_WIDTH - 1];
-    console.info('last block: '+ lastBlock);
+                return false;
+            });
+        });
+    }
     
-    console.info('setting last block')
-    lastRow[BOARD_WIDTH - 1] = 1;
-    lastRow[BOARD_WIDTH - 2] = 1;
-    lastRow[BOARD_WIDTH - 5] = 1;
-
-    console.info('first row: '+ firstRow);
-    console.info('last row: '+ lastRow);
-
-    return map;
+    createBoardMap() {
+        let map = Array.from({length: this.height}, () => (
+            Array(this.width).fill(0))
+        );
+        console.info(map);
+    
+        map = this.mockData(map);
+        console.info(map);
+    
+        return map;
+    }
+    
+    mockData(map) {
+        let firstRow = map[0];
+        console.info('first row: '+ firstRow);
+    
+        let lastRow = map[this.height - 1];
+        console.info('last row: '+ lastRow);
+    
+        let lastBlock = lastRow[this.width - 1];
+        console.info('last block: '+ lastBlock);
+        
+        console.info('setting last block')
+        lastRow[this.width - 1] = 1;
+        lastRow[this.width - 2] = 1;
+        lastRow[this.width - 5] = 1;
+    
+        console.info('first row: '+ firstRow);
+        console.info('last row: '+ lastRow);
+    
+        return map;
+    }
 }
